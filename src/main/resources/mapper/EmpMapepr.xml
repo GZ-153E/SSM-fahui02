@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fahui.dao.EmpMapper">
+    <select id="selectAll" resultType="Emp">
+        select * from tbl_emp
+        <where>
+            <if test="id != '' and id != null" >
+                and id = #{id,jdbcType=NUMERIC}
+            </if>
+            <if test="name != '' and name != null">
+                and name like concat(concat('%',#{name,jdbcType=VARCHAR}),'%')
+            </if>
+            <if test="job != '' and job != null" >
+                and job like concat(concat('%',#{job,jdbcType=VARCHAR}),'%')
+            </if>
+            <if test="mgr != '' and mgr != null" >
+                and mgr = #{mgr,jdbcType=NUMERIC}
+            </if>
+            <if test="hiredate != '' and hiredate != null" >
+                and to_date(hiredate,'yyyy/mm/dd') <![CDATA[>=]]> to_date(#{hiredate},'yyyy/mm/dd')
+            </if>
+            <if test="sal != null and sal != '' ">
+                and sal <![CDATA[>=]]> #{sal,jdbcType=REAL}
+            </if>
+            <if test="comm != '' and comm != null" >
+                and comm <![CDATA[>=]]> #{comm,jdbcType=REAL}
+            </if>
+
+            <if test="empss != null">
+                <if test="empss.hiredate != '' and empss.hiredate != null">
+                    and to_date(hiredate,'yyyy/mm/dd') <![CDATA[<=]]> to_date(#{empss.hiredate},'yyyy/mm/dd')
+                </if>
+                <if test="empss.sal != null and empss.sal != '' ">
+                    and sal <![CDATA[<=]]> #{empss.sal,jdbcType=REAL}
+                </if>
+                <if test="empss.comm != '' and empss.comm != null" >
+                    and comm <![CDATA[<=]]> #{empss.comm,jdbcType=REAL}
+                </if>
+            </if>
+
+            <if test="deptno != '' and deptno != null">
+                and deptno = #{deptno,jdbcType=NUMERIC}
+            </if>
+        </where>
+    </select>
+    <select id="selectByOne" resultType="Emp">
+        select * from tbl_emp where id = #{mgr}
+    </select>
+    <insert id="saveEmp" parameterType="Emp">
+        insert into tbl_emp values(#{id,jdbcType=NUMERIC},#{name,jdbcType=VARCHAR},#{job,jdbcType=VARCHAR},#{mgr,jdbcType=NUMERIC},#{hiredate},#{sal,jdbcType=REAL},#{comm,jdbcType=REAL},#{deptno,jdbcType=NUMERIC})
+    </insert>
+
+    <update id="updateEmp">
+        update tbl_emp set name=#{name,jdbcType=VARCHAR},job=#{job,jdbcType=VARCHAR},mgr=#{mgr,jdbcType=NUMERIC},sal=#{sal,jdbcType=REAL},comm=#{comm,jdbcType=REAL},deptno=#{deptno,jdbcType=NUMERIC} where id=#{id,jdbcType=NUMERIC}
+    </update>
+
+    <delete id="deleteEmp">
+        delete from tbl_emp where id in
+        <foreach item="idArray" collection="array" open="(" separator="," close=")">
+            #{idArray}
+        </foreach>
+    </delete>
+</mapper>
